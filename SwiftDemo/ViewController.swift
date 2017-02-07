@@ -33,6 +33,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var countdown: UILabel!
 
+    @IBOutlet weak var countdownButton: UIButton!
     /**
      * Responds to the countdown button being clicked
      *
@@ -45,9 +46,12 @@ class ViewController: UIViewController {
     @IBAction func countdownBtnClicked(sender: UIButton) {
         
         // Disable the button
-        // performCountdown()
-        // Enable the button
-
+        self.countdownButton.isEnabled = false
+        let queue = DispatchQueue(label: "com.chadwiedemann.queue")
+        print(queue.qos)
+        queue.async {
+            self.performCountdown {}
+        }
     }
     
     /*
@@ -61,10 +65,20 @@ class ViewController: UIViewController {
      * 5) DO NOT EDIT THE METHOD SIGNATURE
      */
     func performCountdown(completion: () -> Void) {
-        
-            // For 0 to 100 {
-            // Pause the thread with this: NSThread.sleepForTimeInterval(0.5)
-            //}
+        var counter = 1
+        var numberToShowInLabel = 99
+        for _ in 0 ..< 100{
+            print("\(counter)")
+            counter += 1
+            Thread.sleep(forTimeInterval: 0.5)
+            DispatchQueue.main.async {
+                if numberToShowInLabel == 0 {
+                    self.countdownButton.isEnabled = true
+                }
+                self.countdown.text = String(numberToShowInLabel)
+                numberToShowInLabel -= 1
+            }
+        }
     }
     
     
